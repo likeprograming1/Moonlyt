@@ -19,6 +19,7 @@ const CreateNFT = ({ setModal, Modal }) => {
     <Boxs>
       <div className="NFTArea">
         <button
+          className="CreateCloseBtn"
           onClick={() => {
             setModal((prev) => ({
               ...prev,
@@ -68,7 +69,9 @@ const CreateNFT = ({ setModal, Modal }) => {
             setFundingDuration(event.target.value);
           }}
         ></input>
-        <button onClick={() => {}}>create</button>
+        <button className="CreateBtn" onClick={() => {}}>
+          create
+        </button>
       </div>
     </Boxs>
   );
