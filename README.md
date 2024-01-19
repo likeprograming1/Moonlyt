@@ -1,70 +1,43 @@
-# Getting Started with Create React App
+# Moonlyt
+<p align="center">
+  <img src="./image/NFT.png" alt="NFT">
+</p>
+"The 'Moonlyt' project is a novel platform designed for webtoon enthusiasts and creators with unique flair.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
 
-In the project directory, you can run:
+## Docs
+https://docs.moonlyt.net
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Demo Site
+https://moonlyt.vercel.app/
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+<br>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Tokenomics
 
-### `npm run build`
+### **Revenue Redistribution Mechanism**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Revenues generated from the works (such as usage on external platforms or utilization as derivative works) are used to purchase MYLT tokens, which are then fairly distributed among NFT-holding investors and authors.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### **Token Scarcity and Value Appreciation**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The total quantity of tokens is limited, ensuring their scarcity. As revenue from content within the Moonlyt platform increases, the value of the tokens has the potential to rise.
 
-### `npm run eject`
+### **Opportunities for Reinvestment and Sustained Interest**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+This system offers attractive reinvestment opportunities for investors and fosters continued interest and investment in the authors' creations.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### **A New Model for Revenue Sharing**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+The approach of "Moonlyt" is designed to directly benefit creators and investors from the commercial success of the works, presenting a new model of revenue sharing in the webtoon industry.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### **Promoting Sustainable Growth**
 
-## Learn More
+This system enhances the creative drive of authors and offers valuable investment opportunities for investors, thereby fostering sustainable growth in the webtoon industry.
+<br>
+<br>
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
