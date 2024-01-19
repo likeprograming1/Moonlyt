@@ -1,0 +1,30 @@
+@font-face {
+  font-family: "Noto-Serif";
+  font-style: normal;
+  src: url("./NotoSerif-Bold.woff") format("woff");
+}
+@font-face {
+  font-family: "PyeongChang-Bold";
+  font-style: normal;
+  src: url("./PyeongChangPeace-Bold.woff") format("woff");
+}
+@font-face {
+  font-family: "PyeongChang-Light";
+  font-style: normal;
+  src: url("./PyeongChangPeace-Light.woff") format("woff");
+}
+@font-face {
+  font-family: "Caprasimo";
+  font-style: normal;
+  src: url("./Caprasimo-Regular.woff") format("woff");
+}
+@font-face {
+  font-family: "PyeongChang-B";
+  font-style: normal;
+  src: url("./PyeongChang-Bold.woff") format("woff");
+}
+@font-face {
+  font-family: "PyeongChang-R";
+  font-style: normal;
+  src: url("./PyeongChang-Regular.woff") format("woff");
+}
