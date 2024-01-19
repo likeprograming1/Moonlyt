@@ -34,4 +34,30 @@ const handleClick = async () => {
   }
 };
 
+export const connectWallet = async (connect, setConnection, setProvider, setAddress ) => {
+  const connection = await connect({
+    webWalletUrl: "https://web.argent.xyz",
+  });
+
+  if (connection && connection.isConnected) {
+    setConnection(connection);
+    setProvider(connection.account);
+    setAddress(connection.selectedAddress);
+  }
+
+  console.log(connection);
+};
+
+export const disconnectWallet = async (
+  disconnect,
+  setConnection,
+  setProvider,
+  setAddress
+) => {
+  await disconnect();
+  setConnection(undefined);
+  setProvider(undefined);
+  setAddress("");
+};
+
 export { handleClick };

@@ -11,17 +11,28 @@ import {
 // import Logo from "../../images/header/Logo.svg";
 import UserProfile from "../../images/header/User.svg";
 import { Link } from "react-router-dom";
-import { handleClick } from "./components/Login";
+import { connectWallet } from "./components/Login";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { LoginState, PointState } from "../../recoil/login/login";
 import Modal from "./components/modal";
+import { connect } from "starknetkit";
 
 const Header = () => {
   const [account, setAccount] = useRecoilState(LoginState);
   const setAmount = useSetRecoilState(PointState);
   const [ModalState, setModalState] = useState(false);
+  const [Connection, setConnection] = useState();
+  const [Provider, setProvider] = useState();
+  const [Address, setAddress] = useState();
   const modalRef = useRef(null);
 
+  console.log(Connection);
+  console.log(Provider);
+  console.log(Address);
+  useEffect(() => {
+    setAccount(Provider?.address);
+    setAmount(200);
+  }, [Provider, setAccount, setAmount]);
   // 모달 밖을 클릭했을 때 모달을 닫는 이벤트 핸들러
   const closeModalOnClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
@@ -29,6 +40,26 @@ const Header = () => {
       setModalState(false);
     }
   };
+
+  useEffect(() => {
+    const connectToStarknet = async () => {
+      const connection = await connect({
+        modalMode: "neverAsk",
+        webWalletUrl: "https://web.argent.xyz",
+      });
+
+      if (connection && connection.isConnected) {
+        setConnection(connection);
+
+        setProvider(connection.account);
+
+        setAddress(connection.selectedAddress);
+      }
+    };
+
+    connectToStarknet();
+  }, []);
+
   useEffect(() => {
     // 이벤트 핸들러를 추가
     document.addEventListener("mousedown", closeModalOnClickOutside);
@@ -37,6 +68,7 @@ const Header = () => {
       document.removeEventListener("mousedown", closeModalOnClickOutside);
     };
   }, []);
+
   return (
     <HeaderContainer>
       <HeaderBox>
@@ -56,15 +88,25 @@ const Header = () => {
             <Login onClick={() => setModalState(!ModalState)}>
               <Profile src={UserProfile} alt="UserProfile-img"></Profile>
             </Login>
-            {ModalState ? <Modal setModalState={setModalState} /> : null}
+            {ModalState ? (
+              <Modal
+                setModalState={setModalState}
+                setConnection={setConnection}
+                setProvider={setProvider}
+                setAddress={setAddress}
+              />
+            ) : null}
           </ProfileBox>
         ) : (
           <Login
+            // onClick={() =>
+            //   handleClick().then((res) => {
+            //     setAccount(res);
+            //     setAmount(200);
+            //   })
+            // }
             onClick={() =>
-              handleClick().then((res) => {
-                setAccount(res);
-                setAmount(200);
-              })
+              connectWallet(connect, setConnection, setProvider, setAddress)
             }
           >
             Login
