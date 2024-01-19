@@ -13,22 +13,41 @@ const Boxs = styled.div`
   z-index: 999;
   .NFTArea {
     width: 100%;
-    max-width: 800px;
+    max-width: 300px;
     height: 100%;
-    max-height: 1254px;
+    max-height: 700px;
     background-color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
+  }
+  .CreateCloseBtn {
+    position: absolute;
+    top: -20px;
+    right: 10px;
+    padding: 0;
   }
   button {
+    margin-top: 20px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px 40px;
     font-size: 2em;
     background-color: white;
+  }
+  .CreateBtn {
+    max-height: 60px;
+    cursor: pointer;
+    border: 1px solid black;
+    border-radius: 15px;
+    &:hover {
+      background-color: black;
+      color: white;
+    }
   }
   input {
     padding: 10px;
