@@ -3,11 +3,6 @@ use starknet::{
 };
 
 #[starknet::interface]
-trait IERC721 {
-    fn owner_of(token_id: u256) -> ContractAddress;
-}
-
-#[starknet::interface]
 trait VoteTrait<T> {
     fn get_vote_status(self: @T) -> (u8, u8, u8, u8);
     fn can_vote(self: @T, token_id: u256) -> bool;
@@ -18,7 +13,7 @@ trait VoteTrait<T> {
 mod Vote {
     use starknet::ContractAddress;
     use starknet::get_caller_address;
-    use super::IERC721;
+    use moonlyt::moonlyt_nft::MoonlytNFT;
 
     const YES: u8 = 1_u8;
     const NO: u8 = 0_u8;
@@ -68,8 +63,8 @@ mod Vote {
         }
 
         fn can_vote(self: @ContractState, token_id: u256) -> bool {
-            let nft_owner = IERC721::owner_of(self.nft_contract.read(), token_id);
             let has_voted = self.voted.read(token_id);
+            let nft_owner = MoonlytNFT::ExternalImpl::get_owner(token_id);
             nft_owner == get_caller_address() && !has_voted
         }
 

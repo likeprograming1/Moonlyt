@@ -33,6 +33,7 @@ use moonlyt::ownership_component::IOwnable;
         totalMoonlytPoolsNo: u128,
         AllPoolsRecords: LegacyMap<u128, ContractAddress>,
         MoonlytPoolOwner: LegacyMap::<ContractAddress, ContractAddress>,
+        MlytTokenOwner: LegacyMap::<ContractAddress, ContractAddress>,
         TokenAddr: ContractAddress,
         #[substorage(v0)]
         ownable: ownable_component::Storage

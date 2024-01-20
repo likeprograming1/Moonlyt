@@ -1,100 +1,203 @@
-use starknet::{
-    ContractAddress, get_caller_address, assert
-};
-
-#[starknet::interface]
-trait IERC721 {
-    fn get_name(self: @ContractState) -> felt252;
-    fn get_symbol(self: @ContractState) -> felt252;
-    fn owner_of(self: @ContractState, token_id: u256) -> ContractAddress;
-    fn balance_of(self: @ContractState, account: ContractAddress) -> u256;
-    
-    fn approve(ref self: ContractState, to: ContractAddress, token_id: u256);
-    fn set_approval_for_all(ref self: ContractState, operator: ContractAddress, approved: bool);
-    fn get_approved(self: @ContractState, token_id: u256) -> ContractAddress;
-    fn is_approved_for_all(self: @ContractState, owner: ContractAddress, operator: ContractAddress) -> bool;
-    
-    fn mint(ref self: ContractState, to: ContractAddress, token_id: u256);
-    fn burn(ref self: ContractState, token_id: u256);
-    fn transfer_from(ref self: ContractState, from: ContractAddress, to: ContractAddress, token_id: u256); 
-}
+// SPDX-License-Identifier: MIT
 
 #[starknet::contract]
-mod MoonlytNft {
-    use starknet::{
-        ContractAddress, get_caller_address, Zeroable, assert
-    };
-    use dict::Dict;
-    use super::IERC721;
+mod MoonlytNFT {
+    use openzeppelin::access::ownable::interface::IOwnable;
+use openzeppelin::token::erc721::ERC721Component;
+    use openzeppelin::token::erc721::interface;
+    use openzeppelin::introspection::src5::SRC5Component;
+    use openzeppelin::security::pausable::PausableComponent;
+    use openzeppelin::access::ownable::OwnableComponent;
+    use starknet::ContractAddress;
+
+    component!(path: ERC721Component, storage: erc721, event: ERC721Event);
+    component!(path: SRC5Component, storage: src5, event: SRC5Event);
+    component!(path: PausableComponent, storage: pausable, event: PausableEvent);
+    component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
+
+    #[abi(embed_v0)]
+    impl ERC721MetadataImpl = ERC721Component::ERC721MetadataImpl<ContractState>;
+    #[abi(embed_v0)]
+    impl ERC721MetadataCamelOnly = ERC721Component::ERC721MetadataCamelOnlyImpl<ContractState>;
+    #[abi(embed_v0)]
+    impl SRC5Impl = SRC5Component::SRC5Impl<ContractState>;
+    #[abi(embed_v0)]
+    impl PausableImpl = PausableComponent::PausableImpl<ContractState>;
+    #[abi(embed_v0)]
+    impl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;
+    #[abi(embed_v0)]
+    impl OwnableCamelOnlyImpl = OwnableComponent::OwnableCamelOnlyImpl<ContractState>;
+
+    impl ERC721InternalImpl = ERC721Component::InternalImpl<ContractState>;
+    impl PausableInternalImpl = PausableComponent::InternalImpl<ContractState>;
+    impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
 
     #[storage]
     struct Storage {
-        token_owners: Dict<u256, ContractAddress>,
-        token_approvals: Dict<u256, ContractAddress>,
-        owner_balances: Dict<ContractAddress, u256>,
-        name: felt252,
-        symbol: felt252,
+        #[substorage(v0)]
+        erc721: ERC721Component::Storage,
+        #[substorage(v0)]
+        src5: SRC5Component::Storage,
+        #[substorage(v0)]
+        pausable: PausableComponent::Storage,
+        #[substorage(v0)]
+        ownable: OwnableComponent::Storage,
+        total_minted: u256,
+        max_supply: u256
     }
 
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        #[flat]
+        ERC721Event: ERC721Component::Event,
+        #[flat]
+        SRC5Event: SRC5Component::Event,
+        #[flat]
+        PausableEvent: PausableComponent::Event,
+        #[flat]
+        OwnableEvent: OwnableComponent::Event,
+    }
+    
     #[constructor]
-    fn constructor(ref self: ContractState, name: felt252, symbol: felt252) {
-        self.name.write(name);
-        self.symbol.write(symbol);
+    fn constructor(
+        ref self: ContractState, 
+        owner: ContractAddress, 
+        token_name: felt252, 
+        token_symbol: felt252,
+        max_supply: u256
+    ) {
+        self.erc721.initializer(token_name, token_symbol);
+        self.ownable.initializer(owner);
+        self.total_minted.write(0);
+        self.max_supply.write(max_supply);
     }
 
     #[external(v0)]
-    impl IERC721Impl of IERC721<ContractState> {
-        fn get_name(self: @ContractState) -> felt252 {
-            self.name.read()
-        }
-
-        fn get_symbol(self: @ContractState) -> felt252 {
-            self.symbol.read()
+    impl ERC721Impl of interface::IERC721<ContractState> {
+        fn balance_of(self: @ContractState, account: ContractAddress) -> u256 {
+            self.erc721.balance_of(account)
         }
 
         fn owner_of(self: @ContractState, token_id: u256) -> ContractAddress {
-            self.token_owners.read(token_id).unwrap_or(Zeroable::zero())
+            self.erc721.owner_of(token_id)
         }
 
-        fn balance_of(self: @ContractState, account: ContractAddress) -> u256 {
-            self.owner_balances.read(account).unwrap_or(Zeroable::zero())
+        fn safe_transfer_from(
+            ref self: ContractState,
+            from: ContractAddress,
+            to: ContractAddress,
+            token_id: u256,
+            data: Span<felt252>,
+        ) {
+            self.pausable.assert_not_paused();
+            self.erc721.safe_transfer_from(from, to, token_id, data);
+        }
+
+        fn transfer_from(
+            ref self: ContractState,
+            from: ContractAddress,
+            to: ContractAddress,
+            token_id: u256,
+        ) {
+            self.pausable.assert_not_paused();
+            self.erc721.transfer_from(from, to, token_id);
         }
 
         fn approve(ref self: ContractState, to: ContractAddress, token_id: u256) {
-            let owner = self.owner_of(token_id);
-            assert(get_caller_address() == owner, 'Not owner of token');
-            self.token_approvals.write(token_id, to);
+            self.pausable.assert_not_paused();
+            self.erc721.approve(to, token_id);
         }
 
         fn set_approval_for_all(ref self: ContractState, operator: ContractAddress, approved: bool) {
+            self.pausable.assert_not_paused();
+            self.erc721.set_approval_for_all(operator, approved);
         }
 
         fn get_approved(self: @ContractState, token_id: u256) -> ContractAddress {
-            self.token_approvals.read(token_id).unwrap_or(Zeroable::zero())
+            self.erc721.get_approved(token_id)
         }
 
         fn is_approved_for_all(self: @ContractState, owner: ContractAddress, operator: ContractAddress) -> bool {
+            self.erc721.is_approved_for_all(owner, operator)
+        }
+    }
+
+    #[external(v0)]
+    impl ERC721CamelOnlyImpl of interface::IERC721CamelOnly<ContractState> {
+        fn balanceOf(self: @ContractState, account: ContractAddress) -> u256 {
+            self.balance_of(account)
         }
 
-        fn mint(ref self: ContractState, to: ContractAddress, token_id: u256) {
-            assert(self.owner_of(token_id).is_zero(), 'Token already minted');
-            self.token_owners.write(token_id, to);
-            self.owner_balances.increment(to, 1);
+        fn ownerOf(self: @ContractState, tokenId: u256) -> ContractAddress {
+            self.owner_of(tokenId)
         }
 
-        fn burn(ref self: ContractState, token_id: u256) {
-            let owner = self.owner_of(token_id);
-            assert(owner.is_non_zero(), 'Token does not exist');
-            self.token_owners.write(token_id, Zeroable::zero());
-            self.owner_balances.decrement(owner, 1);
+        fn safeTransferFrom(
+            ref self: ContractState,
+            from: ContractAddress,
+            to: ContractAddress,
+            tokenId: u256,
+            data: Span<felt252>,
+        ) {
+            self.pausable.assert_not_paused();
+            self.safe_transfer_from(from, to, tokenId, data);
         }
 
-        fn transfer_from(ref self: ContractState, from: ContractAddress, to: ContractAddress, token_id: u256) {
-            let owner = self.owner_of(token_id);
-            assert(owner == from, 'Not owner of token');
-            self.token_owners.write(token_id, to);
-            self.owner_balances.decrement(from, 1);
-            self.owner_balances.increment(to, 1);
+        fn transferFrom(
+            ref self: ContractState,
+            from: ContractAddress,
+            to: ContractAddress,
+            tokenId: u256,
+        ) {
+            self.pausable.assert_not_paused();
+            self.transfer_from(from, to, tokenId);
+        }
+
+        fn setApprovalForAll(ref self: ContractState, operator: ContractAddress, approved: bool) {
+            self.pausable.assert_not_paused();
+            self.set_approval_for_all(operator, approved);
+        }
+
+        fn getApproved(self: @ContractState, tokenId: u256) -> ContractAddress {
+            self.get_approved(tokenId)
+        }
+
+        fn isApprovedForAll(self: @ContractState, owner: ContractAddress, operator: ContractAddress) -> bool {
+            self.is_approved_for_all(owner, operator)
+        }
+    }
+
+    #[generate_trait]
+    #[external(v0)]
+    impl ExternalImpl of ExternalTrait {
+
+        fn pause(ref self: ContractState) {
+            self.ownable.assert_only_owner();
+            self.pausable._pause();
+        }
+
+        fn unpause(ref self: ContractState) {
+            self.ownable.assert_only_owner();
+            self.pausable._unpause();
+        }
+
+        fn safe_mint(
+            ref self: ContractState,
+            recipient: ContractAddress,
+            token_id: u256,
+            data: Span<felt252>,
+            token_uri: felt252,
+        ) {
+            self.ownable.assert_only_owner();
+            self.pausable.assert_not_paused();
+
+            assert!(self.total_minted.read() < self.max_supply.read(), "Max NFT supply reached");
+
+            self.erc721._safe_mint(recipient, token_id, data);
+            self.erc721._set_token_uri(token_id, token_uri);
+
+            self.total_minted.write(self.total_minted.read() + 1);
         }
     }
 }
