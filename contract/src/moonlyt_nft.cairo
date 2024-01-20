@@ -2,8 +2,7 @@
 
 #[starknet::contract]
 mod MoonlytNFT {
-    use openzeppelin::access::ownable::interface::IOwnable;
-use openzeppelin::token::erc721::ERC721Component;
+    use openzeppelin::token::erc721::ERC721Component;
     use openzeppelin::token::erc721::interface;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::security::pausable::PausableComponent;
@@ -32,6 +31,13 @@ use openzeppelin::token::erc721::ERC721Component;
     impl PausableInternalImpl = PausableComponent::InternalImpl<ContractState>;
     impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
 
+    #[derive(Drop)]
+    enum Status{
+        ongoing,
+        stop,
+        end
+    }
+
     #[storage]
     struct Storage {
         #[substorage(v0)]
@@ -43,7 +49,9 @@ use openzeppelin::token::erc721::ERC721Component;
         #[substorage(v0)]
         ownable: OwnableComponent::Storage,
         total_minted: u256,
-        max_supply: u256
+        max_supply: u256,
+        funding_duration: u8,
+        duration_period: u8,
     }
 
     #[event]
@@ -65,12 +73,16 @@ use openzeppelin::token::erc721::ERC721Component;
         owner: ContractAddress, 
         token_name: felt252, 
         token_symbol: felt252,
-        max_supply: u256
+        max_supply: u256,
+        funding_duration: u8,
+        duration_period: u8
     ) {
         self.erc721.initializer(token_name, token_symbol);
         self.ownable.initializer(owner);
         self.total_minted.write(0);
         self.max_supply.write(max_supply);
+        self.funding_duration.write(funding_duration);
+        self.duration_period.write(duration_period);
     }
 
     #[external(v0)]
@@ -171,7 +183,6 @@ use openzeppelin::token::erc721::ERC721Component;
     #[generate_trait]
     #[external(v0)]
     impl ExternalImpl of ExternalTrait {
-
         fn pause(ref self: ContractState) {
             self.ownable.assert_only_owner();
             self.pausable._pause();
