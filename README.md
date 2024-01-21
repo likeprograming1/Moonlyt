@@ -10,7 +10,7 @@
 The 'Moonlyt' project is a novel platform designed for webtoon enthusiasts and creators with unique flair. We are revolutionizing the way webtoon content is created, shared, and monetized.
 
 ## 📚 Documentation
-For more detailed information, please visit our [Docs](https://docs.moonlyt.net).
+For more detailed information, please visit our [Docs](https://docs.moonlyt.net)
 
 ## 🖼️ Demo Site
 Experience Moonlyt in action: [Moonlyt Demo](https://moonlyt.vercel.app/)
