@@ -15,6 +15,9 @@ For more detailed information, please visit our [Docs](https://docs.moonlyt.net)
 ## 🖼️ Demo Site
 Experience Moonlyt in action: [Moonlyt Demo](https://moonlyt.vercel.app/)
 
+## 📈 Pitch Deck 
+Explore Moonlyt's vision, strategy, and potential: [See Our Pitch Deck](https://drive.google.com/file/d/15tt9npzX3p5mO14GQKy56WopRtaZhY4I/view?usp=drive_link)
+
 ## 💰 Tokenomics
 ### Revenue Redistribution Mechanism 💸
 Revenues generated from the works are used to purchase MYLT tokens, which are then fairly distributed among NFT-holding investors and authors.
