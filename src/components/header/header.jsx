@@ -11,7 +11,7 @@ import {
 // import Logo from "../../images/header/Logo.svg";
 import UserProfile from "../../images/header/User.svg";
 import { Link } from "react-router-dom";
-import { connectWallet } from "./components/Login";
+import { connectWallet, handleClick } from "./components/Login";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { LoginState, PointState } from "../../recoil/login/login";
 import Modal from "./components/modal";
@@ -99,15 +99,15 @@ const Header = () => {
           </ProfileBox>
         ) : (
           <Login
-            // onClick={() =>
-            //   handleClick().then((res) => {
-            //     setAccount(res);
-            //     setAmount(200);
-            //   })
-            // }
             onClick={() =>
-              connectWallet(connect, setConnection, setProvider, setAddress)
+              handleClick().then((res) => {
+                setAccount(res);
+                setAmount(200);
+              })
             }
+            // onClick={() =>
+            //   connectWallet(connect, setConnection, setProvider, setAddress)
+            // }
           >
             Login
           </Login>
